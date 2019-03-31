@@ -1,0 +1,13 @@
+{
+  "bg0": "/img/bg0.jpg",
+  "bg1": "/img/bg1.jpg",
+  "controlBtn": "/img/controlBtn.png",
+  "line": "/img/line.png",
+  "upload": "/img/upload.png",
+  "needle": "/img/needle1.png",
+  "replay": "/img/replay.png",
+  "info": "/img/toast.png",
+  "video": "/img/video.mp4",
+  "startGif": "/img/s1.png",
+  "startTxt": "/img/load-start.png"
+}
