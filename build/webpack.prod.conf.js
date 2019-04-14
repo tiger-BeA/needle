@@ -1,13 +1,13 @@
 const webpack = require('webpack')
 const webpackMerge = require('webpack-merge')
-const baseWebpackConfig = require('./webpack.base.conf')
+const baseWebpackConfig = require('../webpack.config')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
-module.exports = function (_param) {
-    return webpackMerge(new baseWebpackConfig(_param), {
+module.exports = function () {
+    return webpackMerge(new baseWebpackConfig(), {
         mode: 'production',
         devtool: 'source-map',
         module: {
@@ -41,7 +41,7 @@ module.exports = function (_param) {
             new MiniCssExtractPlugin({
                 filename: "[name].css",
             }),
-            new HtmlWebpackInlineSourcePlugin(),
+            // new HtmlWebpackInlineSourcePlugin(),
             new webpack.optimize.ModuleConcatenationPlugin(),
         ]
     })

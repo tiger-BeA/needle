@@ -66,7 +66,7 @@ window.onload = () => {
         },
         create() {
             const txt = game.add.button(WIDTH / 2, HEIGHT / 2 + 123, 'startTxt', () => {
-                $domApp.style.background = '#000';
+                document.body.classList = ['step-2'];
                 // game.state.clearCurrentState();
                 initVideo();
             });
@@ -159,13 +159,12 @@ window.onload = () => {
         });
 
         $domVideo.addEventListener('play', function() {
-            $domApp.style.opacity = 0;
             game.state.start('Game');
         });
 
         //监听结束
         $domVideo.addEventListener('ended', function() {
-            $domApp.style.opacity = 1;
+            document.body.classList = ['step-3'];
             $domVideo.src = '';
             this.webkitExitFullScreen();
             $domVideo.classList.add('f-hide');
@@ -173,7 +172,7 @@ window.onload = () => {
         }, false);
 
         $domVideo.addEventListener('pause', function() {
-            $domApp.style.opacity = 1;
+            document.body.classList = ['step-3'];
             $domVideo.src = '';
             this.webkitExitFullScreen();
             $domVideo.classList.add('f-hide');
