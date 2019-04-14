@@ -8,6 +8,7 @@
   "replay": "/img/replay.png",
   "info": "/img/toast.png",
   "video": "/img/video.mp4",
-  "startGif": "/img/s1.png",
-  "startTxt": "/img/load-start.png"
+  "startGif": "/img/butter.gif",
+  "startTxt": "/img/load-start.png",
+  "skip": "/img/btn-skip.png"
 }

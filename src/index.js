@@ -8,35 +8,40 @@ process.env.NODE_ENV !== 'production' && require('./index.html');
 
 // 把bg和gif都放到html里面去
 window.onload = () => {
-    const SCALE = window.innerWidth / 750;
-    const WIDTH = window.innerWidth;
-    const HEIGHT = window.innerHeight;
+    const SCALE = window.innerWidth / window.innerHeight > 0.556 ? window.innerHeight / 1350 : window.innerWidth / 750;
+    const WIDTH = window.innerWidth / SCALE;
+    const HEIGHT = window.innerHeight / SCALE;
 
-    let game = new Phaser.Game(WIDTH, HEIGHT, Phaser.CANVAS, '', undefined, true);
+    const game = new Phaser.Game(WIDTH, HEIGHT, Phaser.CANVAS, 'app', undefined, true);
+    const $domVideo = document.getElementById('video');
+    const $btnSkip = document.getElementById('skip-btn');
+    const $domApp = document.getElementById('app');
+    const $imgGif = document.getElementById('loading-gif');
 
     const Start = {
         preload() {
-            // game.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT;
-            // game.scale.forcePortrait = true;
-            // game.scale.refresh();
-
-            // game.load.onFileComplete.add(function(){
-            // });
             game.load.image('startTxt', config.startTxt);
             game.load.image('startGif', config.startGif);
         },
         create() {
             game.state.start('Loading');
+        },
+        init() {
+            game.scale.setUserScale(SCALE);
+            game.scale.scaleMode = Phaser.ScaleManager.USER_SCALE;
+            game.scale.fullScreenScaleMode = Phaser.ScaleManager.USER_SCALE;
+            game.scale.pageAlignHorizontally = true;
+            game.scale.pageAlignVertically = true;
         }
     };
 
     const Loading = {
         preload() {
-            const gif = game.add.sprite(WIDTH / 2, HEIGHT / 2, 'startGif');
+            $imgGif.src = config.startGif;
+            // const gif = game.add.sprite(WIDTH / 2, HEIGHT / 2, 'startGif');
             // game.load.setPreloadSprite(gif);
-            gif.scale.setTo(SCALE);
-            gif.anchor.setTo(0.5, 1);
-            fadeIn(gif);
+            // gif.anchor.setTo(0.5, 1);
+            // fadeIn(gif);
 
             game.load.image('bg1', config.bg1);
             game.load.video('video', config.video);
@@ -46,26 +51,28 @@ window.onload = () => {
             game.load.image('replay', config.replay);
             game.load.image('info', config.info);
             game.load.image('upload', config.upload);
+            game.load.image('skip', config.skip);
 
-            const loadText = game.add.text(WIDTH / 2, HEIGHT / 2, '0%', { fill:'#FFF', 'fontSize':`${39 * SCALE}px` });
+            const loadText = game.add.text(WIDTH / 2, HEIGHT / 2, '0%', { fill:'#FFF', 'fontSize':`39px` });
             loadText.anchor.setTo(0.5, 0);
 
             // 单个文件加载完的回调
             game.load.onFileComplete.add(function() {
                 loadText.setText(`${arguments[0]}%`);
             });
-            // 所有文件加载完成回调
-            game.load.onLoadComplete.add(() => {
-                const txt = game.add.button(WIDTH / 2, HEIGHT / 2 + 123 * SCALE, 'startTxt', () => {
-                    document.body.style.background = '#000';
-                    game.state.start('Video');
-                });
-                txt.anchor.setTo(0.5, 0);
-                txt.scale.setTo(SCALE);
-                fadeIn(txt);
-            });
+            // // 所有文件加载完成回调
+            // game.load.onLoadComplete.add(() => {
+            // });
         },
-        create() {},
+        create() {
+            const txt = game.add.button(WIDTH / 2, HEIGHT / 2 + 123, 'startTxt', () => {
+                $domApp.style.background = '#000';
+                // game.state.clearCurrentState();
+                initVideo();
+            });
+            txt.anchor.setTo(0.5, 0);
+            fadeIn(txt);
+        },
     }
 
     const Game = {
@@ -73,29 +80,6 @@ window.onload = () => {
         update,
         render,
     };
-
-    const Video = {
-        create() {
-            const video = game.add.video('video');
-            const scale = Math.min(WIDTH / video.width, HEIGHT / video.height);
-            video.addToWorld(game.world.centerX, game.world.centerY, 0.5, 0.5, scale, scale);
-            video.play();
-            fadeIn(video);
-
-            const txt = game.add.text(WIDTH - 15, 15, '跳过', { fill: '#FFF', 'font': `${39 * SCALE}px light` });
-            txt.anchor.setTo(1, 0);
-            txt.inputEnabled = true;
-            txt.events.onInputDown.add(() => {
-                video.stop();
-                game.state.start('Game');
-            });
-
-            video.onComplete.addOnce(() => {
-                txt.destory();
-                game.state.start('Game');
-            });
-        }
-    }
 
     function fadeIn(obj, duration = 500, alpha = 1) {
         obj.alpha = 0;
@@ -105,7 +89,6 @@ window.onload = () => {
     game.state.add('Start', Start);
     game.state.add('Loading', Loading);
     game.state.add('Game', Game);
-    game.state.add('Video', Video);
     game.state.start('Start');
 
     let btn;
@@ -124,9 +107,9 @@ window.onload = () => {
 
     const RATE_EACH_FRAME = 50;
 
-    const REDUCE_DURATION = RATE_EACH_FRAME * 10;
+    const REDUCE_DURATION = RATE_EACH_FRAME * 15;
 
-    const CROP_OFFSET_Y = RATE_EACH_FRAME / 26;
+    const CROP_OFFSET_Y = RATE_EACH_FRAME / 60;
 
     let isTouchBtn;
 
@@ -161,6 +144,47 @@ window.onload = () => {
         // rope.drawBezier();
     }
 
+    function initVideo() {
+        $domVideo.src = config.video;
+        $btnSkip.style.background = `url(${config.skip}) no-repeat center/100%`;
+
+        $domVideo.classList.remove('f-hide');
+        $btnSkip.classList.remove('f-hide');
+
+        $domVideo.play();
+
+        $domVideo.addEventListener('click', (e) => {
+            e.preventDefault();
+            return false;
+        });
+
+        $domVideo.addEventListener('play', function() {
+            $domApp.style.opacity = 0;
+            game.state.start('Game');
+        });
+
+        //监听结束
+        $domVideo.addEventListener('ended', function() {
+            $domApp.style.opacity = 1;
+            $domVideo.src = '';
+            this.webkitExitFullScreen();
+            $domVideo.classList.add('f-hide');
+            $btnSkip.classList.add('f-hide');
+        }, false);
+
+        $domVideo.addEventListener('pause', function() {
+            $domApp.style.opacity = 1;
+            $domVideo.src = '';
+            this.webkitExitFullScreen();
+            $domVideo.classList.add('f-hide');
+            $btnSkip.classList.add('f-hide');
+        }, false);
+
+        $btnSkip.addEventListener('click', () => {
+            $domVideo.pause();
+        });
+    }
+
     function update() {
         if (!isDisableUpdate) {
             updateEmbroid();
@@ -170,25 +194,23 @@ window.onload = () => {
 
     function initRope() {
         ropeLength = 15;
-        ropeInfo = game.add.text(30 * SCALE, game.world.centerY + 327 * SCALE,
+        ropeInfo = game.add.text(30, game.world.centerY + 327,
             '剩余\n15厘米', {
-            font: `${29 * SCALE}px lighter`,
+            font: `29px lighter`,
             fill: 'rgb(255, 247, 223)',
             align: 'center'
         });
-        ropeInfo.setShadow(0, 4 * SCALE, 'rgba(0, 0, 0, 0.38)', 7.56 * SCALE);
+        ropeInfo.setShadow(0, 4, 'rgba(0, 0, 0, 0.38)', 7.56);
 
-        rope = game.add.sprite(40 * SCALE, game.world.centerY - 347 * SCALE, 'rope');
-        rope.scale.setTo(SCALE);
-        initCropRope(rope.width * 2, rope.height * 2);
+        rope = game.add.sprite(40, game.world.centerY - 347, 'rope');
+        initCropRope(rope.width, rope.height);
     }
 
     function initNeedle() {
         const x = game.width / 2;
-        const y = game.height / 2 + 126 * SCALE;
+        const y = game.height / 2 + 126;
         needle = game.add.sprite(x, y, 'needle');
-        needle.scale.setTo(SCALE);
-        needle.anchor.setTo(0.5, 0.9);
+        needle.anchor.setTo(0.5, 0.95);
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.physics.enable(needle, Phaser.Physics.ARCADE);
@@ -196,10 +218,9 @@ window.onload = () => {
     }
 
     function initBtn() {
-        BTN_CENTER = { x: game.width / 2, y: game.height - 141 * SCALE }
+        BTN_CENTER = { x: game.width / 2, y: game.height - 141 }
         btn = game.add.sprite(BTN_CENTER.x, BTN_CENTER.y, 'control');
         btn.anchor.setTo(0.5);
-        btn.scale.setTo(SCALE);
 
         btn.inputEnabled = true;
         btn.input.enableDrag();
@@ -229,16 +250,14 @@ window.onload = () => {
     }
 
     function initHtml() {
-        const bg = game.add.image(WIDTH / 2, HEIGHT / 2, 'bg1');
-        bg.scale.setTo(Math.max(SCALE, window.innerHeight / bg.height));
-        bg.anchor.setTo(0.5, 0.5);
+        $domApp.style.background = `url(${config.bg1}) no-repeat center/cover`;
+        // const bg = game.add.image(WIDTH / 2, HEIGHT / 2, 'bg1');
+        // bg.anchor.setTo(0.5, 0.5);
 
-        const info = game.add.image(WIDTH / 2, HEIGHT - 70 * SCALE, 'info');
-        info.scale.setTo(SCALE);
+        const info = game.add.image(WIDTH / 2, HEIGHT - 70, 'info');
         info.anchor.setTo(0.5, 1);
 
-        replay = game.add.button(WIDTH, 0, 'replay', () => { game.state.start('Game'); });
-        replay.scale.setTo(SCALE);
+        replay = game.add.button(WIDTH, 15, 'replay', () => { game.state.start('Game'); });
         replay.anchor.setTo(1, 0);
     }
 
@@ -259,7 +278,6 @@ window.onload = () => {
 
             const uploadImg = game.add.image(WIDTH / 2, HEIGHT / 2, 'upload');
             uploadImg.anchor.setTo(0.5);
-            uploadImg.scale.setTo(SCALE);
             fadeIn(uploadImg);
 
             disableBtn();
@@ -276,7 +294,7 @@ window.onload = () => {
     }
 
     function disableBtn() {
-        game.add.tween(btn).to({x: game.width / 2}, 300, Phaser.Easing.Back.Out, true);
+        game.add.tween(btn).to({ x: game.width / 2 }, 300, Phaser.Easing.Back.Out, true);
         btn.inputEnabled = false;
         replay.inputEnabled = false;
     }
@@ -311,9 +329,6 @@ window.onload = () => {
     }
 
     function initLine() {
-        // line = game.make.sprite(0, 0, 'line');
-        // line.anchor.setTo(0.5, 0);
-        // line.scale.setTo(SCALE);
         bmd = game.add.bitmapData(WIDTH, HEIGHT);
         bmd.context.fillStyle = '#ff0000';
         bmd.context.globalCompositeOperation = 'source-over';
@@ -322,7 +337,7 @@ window.onload = () => {
     }
 
     function updateLine(x, y) {
-        bmd.context.fillRect(x, y, 2, 2);
+        bmd.context.fillRect(x - 2.5, y, 5, 5);
     }
 
     function initCropRope(w, h) {
