@@ -1,8 +1,6 @@
 import './lib/index.scss';
-// import BezierMaker from './lib/bezierMaker';
 import config from './config.json';
-import $ from 'axios';
-
+const $ = window.$;
 const Phaser = window.Phaser || {};
 process.env.NODE_ENV !== 'production' && require('./index.html');
 
@@ -12,7 +10,7 @@ window.onload = () => {
     const WIDTH = window.innerWidth / SCALE;
     const HEIGHT = window.innerHeight / SCALE;
 
-    const game = new Phaser.Game(WIDTH, HEIGHT, Phaser.CANVAS, 'app', undefined, true);
+    const game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO, 'app', undefined, true);
     const $domVideo = document.getElementById('video');
     const $btnSkip = document.getElementById('skip-btn');
     const $domApp = document.getElementById('app');
@@ -35,16 +33,19 @@ window.onload = () => {
         }
     };
 
+    const isAndroid = navigator.userAgent.indexOf('Android') > -1 || navigator.userAgent.indexOf('Adr') > -1;
     const Loading = {
         preload() {
             $imgGif.src = config.startGif;
+
+            // NOTE: 太大的gif这里加载不出来
             // const gif = game.add.sprite(WIDTH / 2, HEIGHT / 2, 'startGif');
             // game.load.setPreloadSprite(gif);
             // gif.anchor.setTo(0.5, 1);
             // fadeIn(gif);
 
             game.load.image('bg1', config.bg1);
-            game.load.video('video', config.video);
+            isAndroid ? game.load.video('video', config.video) : ($domVideo.src = config.video);
             game.load.image('needle', config.needle);
             game.load.image('control', config.controlBtn);
             game.load.image('rope', config.line);
@@ -67,12 +68,15 @@ window.onload = () => {
         create() {
             const txt = game.add.button(WIDTH / 2, HEIGHT / 2 + 123, 'startTxt', () => {
                 document.body.classList = ['step-2'];
-                // game.state.clearCurrentState();
+                game.state.clearCurrentState();
                 initVideo();
             });
             txt.anchor.setTo(0.5, 0);
             fadeIn(txt);
         },
+        update() {
+
+        }
     }
 
     const Game = {
@@ -97,6 +101,7 @@ window.onload = () => {
     let BTN_CENTER;
 
     let bmd;
+    let bmdDest;
 
     let cropRect;
 
@@ -250,13 +255,11 @@ window.onload = () => {
 
     function initHtml() {
         $domApp.style.background = `url(${config.bg1}) no-repeat center/cover`;
-        // const bg = game.add.image(WIDTH / 2, HEIGHT / 2, 'bg1');
-        // bg.anchor.setTo(0.5, 0.5);
 
         const info = game.add.image(WIDTH / 2, HEIGHT - 70, 'info');
         info.anchor.setTo(0.5, 1);
 
-        replay = game.add.button(WIDTH, 15, 'replay', () => { game.state.start('Game'); });
+        replay = game.add.button(WIDTH, 15, 'replay', () => { game.state.restart('Game'); });
         replay.anchor.setTo(1, 0);
     }
 
@@ -280,7 +283,9 @@ window.onload = () => {
             fadeIn(uploadImg);
 
             disableBtn();
+
             // TODO: 向后端发送base64数据
+            console.log(bmd.canvas.toDataURL());
             // $.post('/getRealShape', {
             //     dataUrl: bmd.canvas.toDataURL()
             // }).then((res) => {
@@ -322,21 +327,25 @@ window.onload = () => {
                 needle.body.angularVelocity = -100;
             }
             game.physics.arcade.velocityFromAngle(needle.angle - 90, RATE_EACH_FRAME, needle.body.velocity);
-            updateLine(needle.centerX, needle.y, needle.angle + 90);
+            updateLine(needle.centerX, needle.y);
             updateCropRope();
         }
     }
 
+    let circleSprite;
+
     function initLine() {
         bmd = game.add.bitmapData(WIDTH, HEIGHT);
-        bmd.context.fillStyle = '#ff0000';
-        bmd.context.globalCompositeOperation = 'source-over';
-        bmd.dirty = true;
-        game.add.sprite(0, 0, bmd);
+        bmd.addToWorld();
+        game.add.image(0, 0, bmd);
+
+        circleSprite = game.make.bitmapData(5, 5)
+        circleSprite.context.fillStyle = '#ff0000';
+        circleSprite.context.fillRect(0, 0, 5, 5);
     }
 
     function updateLine(x, y) {
-        bmd.context.fillRect(x - 2.5, y, 5, 5);
+        bmd.draw(circleSprite, x - 2.5, y);
     }
 
     function initCropRope(w, h) {

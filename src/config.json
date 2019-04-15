@@ -1,14 +1,13 @@
 {
-  "bg0": "http://m.you.interpals.cn/needle/img/bg0.jpg",
-  "bg1": "http://m.you.interpals.cn/needle/img/bg1.jpg",
-  "controlBtn": "http://m.you.interpals.cn/needle/img/controlBtn.png",
-  "line": "http://m.you.interpals.cn/needle/img/line.png",
-  "upload": "http://m.you.interpals.cn/needle/img/upload.png",
-  "needle": "http://m.you.interpals.cn/needle/img/needle1.png",
-  "replay": "http://m.you.interpals.cn/needle/img/replay.png",
-  "info": "http://m.you.interpals.cn/needle/img/toast.png",
-  "video": "http://m.you.interpals.cn/needle/img/video.mp4",
-  "startGif": "http://m.you.interpals.cn/needle/img/butter.gif",
-  "startTxt": "http://m.you.interpals.cn/needle/img/load-start.png",
-  "skip": "http://m.you.interpals.cn/needle/img/btn-skip.png"
+  "bg1": "./img/bg1.jpg",
+  "controlBtn": "./img/controlBtn.png",
+  "line": "./img/line.png",
+  "upload": "./img/upload.png",
+  "needle": "./img/needle1.png",
+  "replay": "./img/replay.png",
+  "info": "./img/toast.png",
+  "video": "./img/video.mp4",
+  "startGif": "./img/butter.gif",
+  "startTxt": "./img/load-start.png",
+  "skip": "./img/btn-skip.png"
 }

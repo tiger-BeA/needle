@@ -13,31 +13,34 @@ html, body, #app {
     background: #000;
 }
 
-
 #app, video {
     position: absolute;
     top: 0;
     left: 0;
 }
 
-img[src=""], img:not([src]) {
+img[src=""], img:not([src]), video[src=""], video:not([src]) {
     opacity: 0;
 }
 
-video[src=""], .f-hide {
+.f-hide {
     display: none;
 }
+
 .step-1 {
     #loading-gif {
         display: block;
     }
     #app {
-        background: url(/img/bg0.jpg) no-repeat center/cover #000;
+        background: url(http://m.you.interpals.cn/needle/img/bg0.jpg) no-repeat center/cover #000;
     }
 }
 .step-2 {
     #app {
         opacity: 0;
+    }
+    video {
+        display: block!important;
     }
 }
 .step-3 {

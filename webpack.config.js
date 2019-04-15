@@ -3,6 +3,7 @@ const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const ip = require('ip')
+const vConsolePlugin = require('vconsole-webpack-plugin')
 
 module.exports = {
     mode: 'development',
@@ -81,5 +82,8 @@ module.exports = {
       }),
       new webpack.HotModuleReplacementPlugin(),
       new FriendlyErrorsPlugin(),
+      // new vConsolePlugin({
+      //   enable: true
+      // }),
     ]
 }

@@ -7,9 +7,9 @@ const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = function () {
-    return webpackMerge(new baseWebpackConfig(), {
+    return webpackMerge(baseWebpackConfig, {
         mode: 'production',
-        devtool: 'source-map',
+        devtool: 'eval',
         module: {
             rules: [{
                 test: /\.(css|scss)$/,
