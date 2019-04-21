@@ -1,5 +1,9 @@
 {
-  "bg1": "./img/bg1.jpg",
+  "bg1_0": "./img/bg1-0.jpg",
+  "bg1_1": "./img/bg1-1.jpg",
+  "bg1_2": "./img/bg1-2.jpg",
+  "bg1_3": "./img/bg1-3.jpg",
+  "bg1_4": "./img/bg1-4.jpg",
   "bg3": "./img/bg3.jpg",
   "bg4": "./img/bg4.jpg",
   "controlBtn": "./img/controlBtn.png",
@@ -7,6 +11,7 @@
   "upload": "./img/upload.png",
   "needle": "./img/needle1.png",
   "replay": "./img/replay.png",
+  "infoTop": "./img/controlInfo.png",
   "info": "./img/toast.png",
   "video": "./img/video.mp4",
   "startGif": "./img/butter.gif",

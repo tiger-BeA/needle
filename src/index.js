@@ -1,6 +1,5 @@
 import './lib/index.scss';
 import config from './config.json';
-const $ = window.$;
 const Phaser = window.Phaser || {};
 process.env.NODE_ENV !== 'production' && require('./index.html');
 
@@ -13,7 +12,7 @@ window.onload = () => {
     const game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO, 'app', undefined, true);
     const $domVideo = document.getElementById('video');
     const $btnSkip = document.getElementById('skip-btn');
-    const $domApp = document.getElementById('app');
+    // const $domApp = document.getElementById('app');
     const $imgGif = document.getElementById('loading-gif');
     const $DomCloud = document.getElementById('m-cloud');
     const $DomFigureCard = document.getElementById('figure-card');
@@ -27,8 +26,7 @@ window.onload = () => {
             game.load.image('startGif', config.startGif);
         },
         create() {
-            game.state.start('RandomFigure');
-            // game.state.start('Loading');
+            game.state.start('Loading');
         },
         init() {
             game.scale.setUserScale(SCALE);
@@ -50,7 +48,7 @@ window.onload = () => {
             // gif.anchor.setTo(0.5, 1);
             // fadeIn(gif);
 
-            game.load.image('bg1', config.bg1);
+            game.load.image('bg1_0', config.bg1_0);
             game.load.image('bg3', config.bg3);
             game.load.image('bg4', config.bg4);
             game.load.image('godLine', config.godLine);
@@ -61,6 +59,7 @@ window.onload = () => {
             game.load.image('rope', config.line);
             game.load.image('replay', config.replay);
             game.load.image('info', config.info);
+            game.load.image('infoTop', config.infoTop);
             game.load.image('upload', config.upload);
             game.load.image('skip', config.skip);
             game.load.image('btnSave', config.btnSave);
@@ -114,18 +113,31 @@ window.onload = () => {
         render,
     };
 
+    const colorBgs = [
+        config.bg1_4,
+        config.bg1_3,
+        config.bg1_2,
+        config.bg1_2,
+        config.bg1_0,
+        config.bg1_1,
+        config.bg1_1,
+        config.bg1_0,
+        config.bg1_4,
+    ];
+    const figureRandomIndex = Math.floor(Math.random() * 9 + 1);
     const RandomFigure = {
         preload() {
-            const index = Math.floor(Math.random() * 9 + 1);
-            game.load.image('figure', `./img/p${index}.png`);
-            game.load.image('figureTxt', `./img/p${index}_txt.png`);
-            game.load.image('figureTlt', `./img/p${index}_tlt.png`);
-            game.load.image('figureInfo', `./img/p${index}_info.png`);
-            finalCardUrl = `./img/p${index}_card.jpg`;
+            game.load.image('figure', `./img/p${figureRandomIndex}.png`);
+            game.load.image('figureTxt', `./img/p${figureRandomIndex}_txt.png`);
+            game.load.image('figureTlt', `./img/p${figureRandomIndex}_tlt.png`);
+            game.load.image('figureInfo', `./img/p${figureRandomIndex}_info.png`);
+            game.load.image('figureBg', colorBgs[figureRandomIndex - 1]);
+            finalCardUrl = `./img/p${figureRandomIndex}_card.jpg`;
             game.load.image('figureCard', finalCardUrl);
         },
         create() {
-            document.body.style.background = `url(${config.bg4}) no-repeat center/cover`;
+            document.body.style.background = `url(${colorBgs[figureRandomIndex - 1]}) no-repeat center/cover`;
+            // document.body.style.background = `url(${config.bg4}) no-repeat center/cover`;
 
             // step1: 提示 + 用户自画
             const resTxt = game.add.image(75, HEIGHT - 389, 'resTxt');
@@ -165,7 +177,6 @@ window.onload = () => {
 
     const figureLast = {
         create() {
-            document.body.style.background = `url(${config.bg1}) no-repeat center/cover`;
             document.body.classList = ['step-5'];
 
             const figure = game.add.image(WIDTH / 2, HEIGHT / 2 + 100, 'figure');
@@ -181,7 +192,7 @@ window.onload = () => {
 
     function fadeIn(obj, duration = 500, alpha = 1, delay = 0) {
         obj.alpha = 0;
-        return game.add.tween(obj).to({ alpha }, duration, Phaser.Easing.Circular.In, true, delay);
+        return game.add.tween(obj).to({ alpha }, duration, Phaser.Easing.Cubic.In, true, delay);
     }
 
 
@@ -207,6 +218,12 @@ window.onload = () => {
     let ropeLength;
     let ropeInfo;
     let rope;
+
+    let controlInfoSide;
+    let controlInfoTop;
+    let infoShakeTween;
+    let btnShakeTween;
+    let hasTouchBtn = false;
 
     const RATE_EACH_FRAME = 50;
 
@@ -234,7 +251,7 @@ window.onload = () => {
 
     function initVideo() {
         $domVideo.src = config.video;
-        $btnSkip.style.background = `url(${config.skip}) no-repeat center/100%`;
+        $btnSkip.style.background = `url(${config.skip}) no-repeat center/cover`;
 
         $domVideo.classList.remove('f-hide');
         $btnSkip.classList.remove('f-hide');
@@ -344,6 +361,16 @@ window.onload = () => {
         btn.input.enableDrag();
         btn.input.boundsRect = new Phaser.Rectangle(btn.x - btn.width, btn.y - btn.height / 2, btn.width * 2, btn.height);
 
+        btn.alpha = 0.5;
+        btnShakeTween = game.add.tween(btn).to({ alpha: 1 }, 500, 'Linear', true, 0, -1);
+        btnShakeTween.yoyo(true, 500);
+
+        controlInfoTop = game.add.image(WIDTH / 2, HEIGHT - 264, 'infoTop');
+        controlInfoTop.anchor.setTo(0.5, 1);
+        controlInfoTop.alpha = 0.5;
+        infoShakeTween = game.add.tween(controlInfoTop).to({ alpha: 1 }, 500, 'Linear', true, 0, -1);
+        infoShakeTween.yoyo(true, 500);
+
         btn.events.onDragStart.add(dragStart);
         btn.events.onDragUpdate.add(dragUpdate);
         btn.events.onDragStop.add(dragStop);
@@ -351,6 +378,15 @@ window.onload = () => {
 
     function dragStart() {
         isTouchBtn = true;
+        if (!hasTouchBtn) {
+            infoShakeTween.stop();
+            btnShakeTween.stop();
+            btn.alpha = 1;
+            hasTouchBtn = true;
+        }
+        fadeIn(controlInfoSide);
+        controlInfoTop.alpha = 0;
+
         if (!timer) {
             initTimer();
         } else {
@@ -362,21 +398,23 @@ window.onload = () => {
     }
 
     function dragStop() {
+        controlInfoSide.alpha = 0;
+        fadeIn(controlInfoTop);
         isTouchBtn = false;
         timer && timer.pause();
         game.add.tween(btn).to({x: game.width / 2}, 300, Phaser.Easing.Back.Out, true);
     }
 
     function initHtml() {
-        document.body.style.background = `url(${config.bg1}) no-repeat center/cover`;
+        document.body.style.background = `url(${config.bg1_0}) no-repeat center/cover`;
 
-        const info = game.add.image(WIDTH / 2, HEIGHT - 70, 'info');
-        info.anchor.setTo(0.5, 1);
+        controlInfoSide = game.add.image(WIDTH / 2, HEIGHT - 70, 'info');
+        controlInfoSide.anchor.setTo(0.5, 1);
+        controlInfoSide.alpha = 0;
 
         replay = game.add.button(WIDTH, 15, 'replay', () => { game.state.restart('Game'); });
         replay.anchor.setTo(1, 0);
     }
-
 
     function initTimer() {
         timer = game.time.create(true);

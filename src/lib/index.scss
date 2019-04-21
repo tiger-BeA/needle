@@ -21,6 +21,12 @@ html, body, #app {
     background: #000;
 }
 
+body {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
 #app, video {
     position: absolute;
     top: 0;
@@ -35,7 +41,7 @@ img[src=""], img:not([src]), video[src=""], video:not([src]) {
 .u-deco {
     z-index: 0;
 }
-.u-mask {
+.u-color-mask, .u-mask {
     z-index: 1;
 }
 #app {
@@ -44,8 +50,8 @@ img[src=""], img:not([src]), video[src=""], video:not([src]) {
 #loading-gif {
     z-index: 4;
 }
-#godLine {
-    z-index: 4;
+#god-line {
+    z-index: 5;
 }
 #good-wrap {
     z-index: 1;
@@ -69,14 +75,15 @@ img[src=""], img:not([src]), video[src=""], video:not([src]) {
 
 .u-mask {
     position: absolute;
+    display: none;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     opacity: 0.651;
-    background: #6f2d2d;
     mix-blend-mode: multiply;
 }
+
 .u-deco {
     position: absolute;
     display: none;
@@ -140,8 +147,8 @@ img[src=""], img:not([src]), video[src=""], video:not([src]) {
     position: absolute;
     left: 0;
     top: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     overflow: hidden;
     .u-cloud {
         position: absolute;
@@ -178,7 +185,40 @@ img[src=""], img:not([src]), video[src=""], video:not([src]) {
     }
 }
 
+#skip-btn {
+    position: absolute;
+    right: 0.2rem;
+    top: 0.2rem;
+    width: 2rem;
+    height: 0.68rem;
+}
+#loading-gif {
+    position: absolute;
+    display: none;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -100%);
+    width: 3.05rem;
+    height: 2.2rem;
+}
+video {
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    width: 100%;
+    object-fit: cover;
+    object-position: center center;
+    &::-webkit-media-controls-enclosure {
+        display: none !important;
+    }
+}
+
+
 .step-1 {
+    background: #254B84;
+    .u-mask {
+        display: block;
+    }
     #loading-gif {
         display: block;
     }
@@ -215,41 +255,6 @@ img[src=""], img:not([src]), video[src=""], video:not([src]) {
 .step-5 {
     #goods-wrap {
         display: block;
-    }
-    .m-bg {
-        display: block;
-        background: #773233;
-        .u-deco {
-            display: none;
-        }
-    }
-}
-
-#skip-btn {
-    position: absolute;
-    right: 0.2rem;
-    top: 0.2rem;
-    width: 2rem;
-    height: 0.68rem;
-}
-#loading-gif {
-    position: absolute;
-    display: none;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -100%);
-    width: 3.05rem;
-    height: 2.2rem;
-}
-video {
-    top: 50%;
-    left: 50%;
-    transform: translate3d(-50%, -50%, 0);
-    width: 100%;
-    object-fit: cover;
-    object-position: center center;
-    &::-webkit-media-controls-enclosure {
-        display: none !important;
     }
 }
 
