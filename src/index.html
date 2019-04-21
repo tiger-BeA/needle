@@ -8,6 +8,15 @@
     <title>needle</title>
 </head>
 <body class="step-1">
+    <img class="u-mask" src="/img/mask.png">
+    <img class="u-deco" src="/img/bg0-top.png">
+    <div id="m-cloud" class="f-hide">
+        <img class="u-cloud u-cloud1 cloud-left" src="/img/cloud-left1.png" />
+        <img class="u-cloud u-cloud2 cloud-right" src="/img/cloud-right3.png" />
+        <img class="u-cloud u-cloud3 cloud-left" src="/img/cloud-left2.png" />
+        <img class="u-cloud u-cloud4 cloud-right" src="/img/cloud-right4.png" />
+    </div>
+    <img id="god-line" />
     <img id="loading-gif" />
     <div id="app"></div>
     <video id="video"
@@ -23,6 +32,15 @@
         controlsList='nofullscreen nodownload noremote footbar'
     ></video>
     <div id="skip-btn" class="f-hide"></div>
+    <div id="goods-wrap">
+        <img class="u-card" id="figure-card" />
+        <div class="btn-save">
+            <img id="btn-save" src="/img/btn-save.png" />
+        </div>
+        <a class="btn-link" href="https://act.you.163.com/act/pub/MyhQKrR8PU.html">
+            <img id="btn-link" src="/img/btn-link.png" />
+        </a>
+    </div>
     <script src='//res.wx.qq.com/open/js/jweixin-1.0.0.js'></script>
     <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
     <script>
@@ -46,17 +64,17 @@
 
                 wx.config(configData);
                 wx.ready(function() {
-                var shareData = {
-                    title: '苗族刺绣', // 分享标题
-                    desc: '苗族刺绣的描述', // 分享描述
-                    link: window.location.href.split('#')[0], // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-                    imgUrl: 'http://m.you.interpals.cn/share2.png', // 分享图标
-                    success: function () {},
-                    cancel: function () {}
-                }
+                    var shareData = {
+                        title: '苗族刺绣', // 分享标题
+                        desc: '苗族刺绣的描述', // 分享描述
+                        link: window.location.href.split('#')[0], // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                        imgUrl: 'http://m.you.interpals.cn/share2.png', // 分享图标
+                        success: function () {},
+                        cancel: function () {}
+                    }
 
-                wx.onMenuShareTimeline(shareData);
-                wx.onMenuShareAppMessage(shareData);
+                    wx.onMenuShareTimeline(shareData);
+                    wx.onMenuShareAppMessage(shareData);
                 });
             }
         });

@@ -6,6 +6,14 @@
 html {
     font-size: calc(100vw / 7.5);
 }
+@media only screen
+and (min-device-width : 768px)
+and (max-device-width : 1024px)
+and (orientation : portrait) {
+  html {
+    font-size: calc(100vw / 9);
+  }
+}
 html, body, #app {
     width: 100%;
     height: 100%;
@@ -17,24 +25,168 @@ html, body, #app {
     position: absolute;
     top: 0;
     left: 0;
+    background: transparent;
 }
 
 img[src=""], img:not([src]), video[src=""], video:not([src]) {
     opacity: 0;
 }
 
-.f-hide {
+.u-deco {
+    z-index: 0;
+}
+.u-mask {
+    z-index: 1;
+}
+#app {
+    z-index: 3;
+}
+#loading-gif {
+    z-index: 4;
+}
+#godLine {
+    z-index: 4;
+}
+#good-wrap {
+    z-index: 1;
+    .btn-save {
+        z-index: 1;
+    }
+    .u-card {
+        z-index: 2;
+    }
+    .btn-link {
+        z-index: 3;
+    }
+}
+
+#m-cloud {
+    z-index: 10;
+}
+#skip-btn {
+    z-index: 99;
+}
+
+.u-mask {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.651;
+    background: #6f2d2d;
+    mix-blend-mode: multiply;
+}
+.u-deco {
+    position: absolute;
     display: none;
+    left: 50%;
+    top: -3.43rem;
+    margin-left: -3.43rem;
+    width: 6.86rem;
+    height: 6.86rem;
+    transform-origin: center center;
+    animation: rotate infinite 60s linear both;
+}
+
+#goods-wrap {
+    position: absolute;
+    display: none;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    font-size: 0;
+    .u-card {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+    }
+    .btn-save {
+        position: absolute;
+        left: 0.96rem;
+        bottom: 0.55rem;
+        width: 2.83rem;
+        height: 1.35rem;
+        img {
+            width: 100%;
+            height: 100%;
+        }
+    }
+    .btn-link {
+        position: absolute;
+        right: 0.96rem;
+        bottom: 0.55rem;
+        width: 2.83rem;
+        height: 1.35rem;
+        img {
+            width: 100%;
+            height: 100%;
+        }
+    }
+}
+#god-line {
+    position: absolute;
+    display: none;
+    top: calc(50vh - 2.8rem);
+    left: 50%;
+    margin-left: -1.735rem;
+    width: 3.47rem;
+    height: 4.05rem;
+    animation: shake 500ms infinite alternate-reverse both, slipDown 10000ms 1 both;
+}
+#m-cloud {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    .u-cloud {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    &.f-slipIn {
+        .cloud-left {
+            animation: slideLeft 0.6s ease 1 both;
+        }
+        .cloud-right {
+            animation: slideRight 0.6s ease 1 both;
+        }
+        .u-cloud3, .u-cloud4 {
+            animation-delay: 0.1s;
+        }
+    }
+    &.f-slipOut {
+        .cloud-left {
+            animation: slideLeftReverse 0.6s ease 1 both;
+        }
+        .cloud-right {
+            animation: slideRightReverse 0.6s ease 1 both;
+        }
+        .u-cloud3, .u-cloud4 {
+            animation-delay: 0.5s;
+        }
+        .u-cloud1, .u-cloud2 {
+            animation-delay: 0.4s;
+        }
+    }
 }
 
 .step-1 {
     #loading-gif {
         display: block;
     }
-    #app {
-        background: url(http://m.you.interpals.cn/needle/img/bg0.jpg) no-repeat center/cover #000;
+    .u-deco {
+        display: block;
     }
 }
+
 .step-2 {
     #app {
         opacity: 0;
@@ -43,23 +195,46 @@ img[src=""], img:not([src]), video[src=""], video:not([src]) {
         display: block!important;
     }
 }
+
 .step-3 {
-    #app {
-        opacity: 1;
+    #god-line {
+        display: block;
     }
 }
+
+.step-4 {
+    .m-bg {
+        display: block;
+        background: #773233;
+        .u-deco {
+            display: none;
+        }
+    }
+}
+
+.step-5 {
+    #goods-wrap {
+        display: block;
+    }
+    .m-bg {
+        display: block;
+        background: #773233;
+        .u-deco {
+            display: none;
+        }
+    }
+}
+
 #skip-btn {
     position: absolute;
-    z-index: 99;
-    right: 0.44rem;
-    top: 0.44rem;
-    width: 2.5rem;
-    height: 0.85rem;
+    right: 0.2rem;
+    top: 0.2rem;
+    width: 2rem;
+    height: 0.68rem;
 }
 #loading-gif {
     position: absolute;
     display: none;
-    z-index: 99;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -100%);
@@ -71,7 +246,8 @@ video {
     left: 50%;
     transform: translate3d(-50%, -50%, 0);
     width: 100%;
-    object-fit: fill;
+    object-fit: cover;
+    object-position: center center;
     &::-webkit-media-controls-enclosure {
         display: none !important;
     }
@@ -80,5 +256,50 @@ video {
 #__vconsole {
     * {
         font-size: 14px;
+    }
+}
+
+.f-hide {
+    display: none;
+}
+
+@keyframes rotate {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes slideLeft {
+    from {
+        transform: translate(-100%, 0);
+    }
+}
+
+@keyframes slideLeftReverse {
+    to {
+        transform: translate(-100%, 0);
+    }
+}
+@keyframes slideRight {
+    from {
+        transform: translate(100%, 0);
+    }
+}
+@keyframes slideRightReverse {
+    to {
+        transform: translate(100%, 0);
+    }
+}
+@keyframes shake {
+    from {
+        opacity: 0.5;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes slipDown {
+    to {
+        transform: translateY(0.9rem);
     }
 }

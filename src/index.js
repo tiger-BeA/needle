@@ -15,6 +15,11 @@ window.onload = () => {
     const $btnSkip = document.getElementById('skip-btn');
     const $domApp = document.getElementById('app');
     const $imgGif = document.getElementById('loading-gif');
+    const $DomCloud = document.getElementById('m-cloud');
+    const $DomFigureCard = document.getElementById('figure-card');
+    const $DomGodLine = document.getElementById('god-line');
+
+    let finalCardUrl = '';
 
     const Start = {
         preload() {
@@ -22,7 +27,8 @@ window.onload = () => {
             game.load.image('startGif', config.startGif);
         },
         create() {
-            game.state.start('Loading');
+            game.state.start('RandomFigure');
+            // game.state.start('Loading');
         },
         init() {
             game.scale.setUserScale(SCALE);
@@ -45,6 +51,10 @@ window.onload = () => {
             // fadeIn(gif);
 
             game.load.image('bg1', config.bg1);
+            game.load.image('bg3', config.bg3);
+            game.load.image('bg4', config.bg4);
+            game.load.image('godLine', config.godLine);
+            game.load.image('btnStart', config.btnStart);
             isAndroid ? game.load.video('video', config.video) : ($domVideo.src = config.video);
             game.load.image('needle', config.needle);
             game.load.image('control', config.controlBtn);
@@ -53,6 +63,9 @@ window.onload = () => {
             game.load.image('info', config.info);
             game.load.image('upload', config.upload);
             game.load.image('skip', config.skip);
+            game.load.image('btnSave', config.btnSave);
+            game.load.image('btnLink', config.btnLink);
+            game.load.image('resTxt', config.resTxt);
 
             const loadText = game.add.text(WIDTH / 2, HEIGHT / 2, '0%', { fill:'#FFF', 'fontSize':`39px` });
             loadText.anchor.setTo(0.5, 0);
@@ -79,21 +92,107 @@ window.onload = () => {
         }
     }
 
+    const GameStart = {
+        create() {
+            const bg = game.add.image(WIDTH / 2, HEIGHT / 2, 'bg3');
+            bg.anchor.setTo(0.5, 0.5);
+
+            let startBtn = game.add.button(WIDTH / 2, HEIGHT / 2 + 444, 'btnStart', () => {
+                showCloud(() => {
+                    document.body.classList = ['step-4'];
+                    game.state.start('Game');
+                    hideCloud();
+                });
+            });
+            startBtn.anchor.setTo(0.5, 0);
+        }
+    }
+
     const Game = {
         create,
         update,
         render,
     };
 
-    function fadeIn(obj, duration = 500, alpha = 1) {
-        obj.alpha = 0;
-        game.add.tween(obj).to({ alpha }, duration, 'Linear', true);
+    const RandomFigure = {
+        preload() {
+            const index = Math.floor(Math.random() * 9 + 1);
+            game.load.image('figure', `./img/p${index}.png`);
+            game.load.image('figureTxt', `./img/p${index}_txt.png`);
+            game.load.image('figureTlt', `./img/p${index}_tlt.png`);
+            game.load.image('figureInfo', `./img/p${index}_info.png`);
+            finalCardUrl = `./img/p${index}_card.jpg`;
+            game.load.image('figureCard', finalCardUrl);
+        },
+        create() {
+            document.body.style.background = `url(${config.bg4}) no-repeat center/cover`;
+
+            // step1: 提示 + 用户自画
+            const resTxt = game.add.image(75, HEIGHT - 389, 'resTxt');
+            resTxt.anchor.setTo(0, 1);
+
+            const selfFigure = game.add.image(WIDTH, HEIGHT, bmd);
+            selfFigure.scale.setTo(0.6);
+            selfFigure.anchor.setTo(1, 1);
+            selfFigure.alpha = 0.6;
+
+            // step2: 花纹 + 名字
+            const figure = game.add.image(WIDTH * 0.8, 320, 'figure');
+            figure.anchor.setTo(0.5, 0.5);
+            figure.scale.setTo(1.59);
+            game.add.tween(figure).to({ angle: 360 }, 60000, 'Linear', true);
+            fadeIn(figure, 500, 1, 1000);
+
+            const figureTlt = game.add.image(75, HEIGHT - 290, 'figureTlt');
+            figureTlt.anchor.setTo(0, 1);
+            fadeIn(figureTlt, 300, 1, 1000);
+
+            // step3: 文案说明
+            const figureTxt = game.add.image(75, HEIGHT - 95, 'figureTxt');
+            figureTxt.anchor.setTo(0, 1);
+            const lastTween = fadeIn(figureTxt, 500, 1, 2000);
+
+            lastTween.onComplete.add(() => {
+                let tmp = setTimeout(() => {
+                    showCloud(() => {
+                        game.state.start('figureLast');
+                        hideCloud();
+                    });
+                }, 3000);
+            });
+        }
     }
+
+    const figureLast = {
+        create() {
+            document.body.style.background = `url(${config.bg1}) no-repeat center/cover`;
+            document.body.classList = ['step-5'];
+
+            const figure = game.add.image(WIDTH / 2, HEIGHT / 2 + 100, 'figure');
+            figure.anchor.setTo(0.5, 1);
+            figure.scale.setTo(0.95);
+
+            const info = game.add.image(WIDTH / 2, HEIGHT / 2 + 100, 'figureInfo');
+            info.anchor.setTo(0.5, 0);
+
+            $DomFigureCard.src = finalCardUrl;
+        }
+    }
+
+    function fadeIn(obj, duration = 500, alpha = 1, delay = 0) {
+        obj.alpha = 0;
+        return game.add.tween(obj).to({ alpha }, duration, Phaser.Easing.Circular.In, true, delay);
+    }
+
 
     game.state.add('Start', Start);
     game.state.add('Loading', Loading);
     game.state.add('Game', Game);
+    game.state.add('GameStart', GameStart);
+    game.state.add('RandomFigure', RandomFigure);
+    game.state.add('figureLast', figureLast);
     game.state.start('Start');
+
 
     let btn;
     let replay;
@@ -101,7 +200,6 @@ window.onload = () => {
     let BTN_CENTER;
 
     let bmd;
-    let bmdDest;
 
     let cropRect;
 
@@ -132,21 +230,6 @@ window.onload = () => {
     }
 
     function render() {
-        // 画线
-        // game.context.lineWidth = 6 * SCALE;
-        // rope = new BezierMaker(game.context, [
-        //     {x: 46, y: 150},
-        //     {x: 0, y: 250},
-        //     {x: 170, y: 210},
-        //     {x: -40, y: 240},
-        //     {x: 30, y: 350},
-        //     {x: 20, y: 290},
-        //     {x: 130, y: 380},
-        //     {x: 0, y: 400},
-        //     {x: 40, y: 430},
-        //     {x: 45, y: 480},
-        // ], '#f00');
-        // rope.drawBezier();
     }
 
     function initVideo() {
@@ -164,29 +247,60 @@ window.onload = () => {
         });
 
         $domVideo.addEventListener('play', function() {
-            game.state.start('Game');
+            game.state.start('GameStart');
         });
 
         //监听结束
         $domVideo.addEventListener('ended', function() {
-            document.body.classList = ['step-3'];
-            $domVideo.src = '';
-            this.webkitExitFullScreen();
-            $domVideo.classList.add('f-hide');
-            $btnSkip.classList.add('f-hide');
+            showGameStart();
         }, false);
 
         $domVideo.addEventListener('pause', function() {
-            document.body.classList = ['step-3'];
-            $domVideo.src = '';
-            this.webkitExitFullScreen();
-            $domVideo.classList.add('f-hide');
-            $btnSkip.classList.add('f-hide');
+            showGameStart();
         }, false);
 
         $btnSkip.addEventListener('click', () => {
             $domVideo.pause();
         });
+    }
+
+    function showGameStart() {
+        $btnSkip.classList.add('f-hide');
+        showCloud(() => {
+            // TODO: 加godLine
+            $DomGodLine.src = config.godLine;
+            document.body.classList = ['step-3'];
+            $domVideo.src = '';
+            $domVideo.classList.add('f-hide');
+            hideCloud();
+        });
+    }
+
+    function showCloud(cb) {
+        let clearTimer;
+        const animationEndCb = () => {
+            clearTimer && clearTimeout(clearTimer);
+            clearTimer = setTimeout(() => {
+                $DomCloud.removeEventListener('animationend', animationEndCb);
+                cb && cb();
+            }, 100);
+        };
+        $DomCloud.classList = ['f-slipIn'];
+        $DomCloud.addEventListener('animationend', animationEndCb);
+    }
+
+    function hideCloud(cb) {
+        let clearTimer;
+        const animationEndCb = () => {
+            clearTimer && clearTimeout(clearTimer);
+            clearTimer = setTimeout(() => {
+                $DomCloud.classList = ['f-hide'];
+                $DomCloud.removeEventListener('animationend', animationEndCb);
+                cb && cb();
+            }, 100);
+        };
+        $DomCloud.classList = ['f-slipOut'];
+        $DomCloud.addEventListener('animationend', animationEndCb);
     }
 
     function update() {
@@ -254,7 +368,7 @@ window.onload = () => {
     }
 
     function initHtml() {
-        $domApp.style.background = `url(${config.bg1}) no-repeat center/cover`;
+        document.body.style.background = `url(${config.bg1}) no-repeat center/cover`;
 
         const info = game.add.image(WIDTH / 2, HEIGHT - 70, 'info');
         info.anchor.setTo(0.5, 1);
@@ -278,23 +392,29 @@ window.onload = () => {
             cropRect.resize(0, 0);
             rope.updateCrop();
 
-            const uploadImg = game.add.image(WIDTH / 2, HEIGHT / 2, 'upload');
-            uploadImg.anchor.setTo(0.5);
-            fadeIn(uploadImg);
-
             disableBtn();
-
+            uploadLoading();
             // TODO: 向后端发送base64数据
-            console.log(bmd.canvas.toDataURL());
-            // $.post('/getRealShape', {
-            //     dataUrl: bmd.canvas.toDataURL()
-            // }).then((res) => {
-            //     uploadImg.destory();
-            //     // TODO: 显示识别结果页面
-            // }).catch(() => {
-            //     // TODO: 需要识别失败的提示和交互
-            // });
         }
+    }
+
+    function uploadLoading() {
+        const rect = game.add.graphics(0, 0);
+        rect.beginFill(0x0e264e);
+        rect.drawRect(0, HEIGHT / 2 - 150, WIDTH, 300);
+        rect.endFill();
+        rect.alpha = 0.7;
+
+        const uploadImg = game.add.image(WIDTH / 2, HEIGHT / 2, 'upload');
+        uploadImg.anchor.setTo(0.5);
+        fadeIn(uploadImg);
+
+        let tempTimer = setTimeout(() => {
+            showCloud(() => {
+                game.state.start('RandomFigure');
+                hideCloud();
+            });
+        }, 3000);
     }
 
     function disableBtn() {
@@ -319,12 +439,8 @@ window.onload = () => {
         needle.body.angularVelocity = 0;
 
         if (isTouchBtn) {
-            if (btn.x - BTN_CENTER.x > 30) {
-                // 右转
-                needle.body.angularVelocity = 100;
-            } else if (btn.x - BTN_CENTER.x < -30) {
-                // 左转
-                needle.body.angularVelocity = -100;
+            if (btn.x - BTN_CENTER.x > 30 || btn.x - BTN_CENTER.x < -30) {
+                needle.body.angularVelocity = btn.x - BTN_CENTER.x;
             }
             game.physics.arcade.velocityFromAngle(needle.angle - 90, RATE_EACH_FRAME, needle.body.velocity);
             updateLine(needle.centerX, needle.y);

@@ -1,5 +1,7 @@
 {
   "bg1": "./img/bg1.jpg",
+  "bg3": "./img/bg3.jpg",
+  "bg4": "./img/bg4.jpg",
   "controlBtn": "./img/controlBtn.png",
   "line": "./img/line.png",
   "upload": "./img/upload.png",
@@ -9,5 +11,10 @@
   "video": "./img/video.mp4",
   "startGif": "./img/butter.gif",
   "startTxt": "./img/load-start.png",
-  "skip": "./img/btn-skip.png"
+  "skip": "./img/btn-skip.png",
+  "btnSave": "./img/btn-save.png",
+  "btnLink": "./img/btn-link.png",
+  "godLine": "./img/godLine.png",
+  "btnStart": "./img/btn-start.png",
+  "resTxt": "./img/res-text.png"
 }
