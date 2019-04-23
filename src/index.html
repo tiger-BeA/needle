@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="./lib/phaser.min.js"></script>
-    <title>needle</title>
+    <title>守护者计划</title>
 </head>
 <body class="step-1">
     <img class="u-mask" src="/img/mask.png">
@@ -55,21 +55,21 @@
                 return console.log(data.error);
                 }
                 var configData = Object.assign({
-                debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-                appId: '', // 必填，公众号的唯一标识
-                timestamp: '', // 必填，生成签名的时间戳
-                nonceStr: '', // 必填，生成签名的随机串
-                signature: '',// 必填，签名
-                jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'] // 必填，需要使用的JS接口列表
+                    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                    appId: '', // 必填，公众号的唯一标识
+                    timestamp: '', // 必填，生成签名的时间戳
+                    nonceStr: '', // 必填，生成签名的随机串
+                    signature: '',// 必填，签名
+                    jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'] // 必填，需要使用的JS接口列表
                 }, data);
 
                 wx.config(configData);
                 wx.ready(function() {
                     var shareData = {
-                        title: '苗族刺绣', // 分享标题
-                        desc: '苗族刺绣的描述', // 分享描述
+                        title: '一份来自黔东南的神秘祝福', // 分享标题
+                        desc: '千年苗族的传承力量，愿你拥有幸运的一天', // 分享描述
                         link: window.location.href.split('#')[0], // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-                        imgUrl: 'http://m.you.interpals.cn/share2.png', // 分享图标
+                        imgUrl: 'http://m.you.interpals.cn/share.jpg', // 分享图标
                         success: function () {},
                         cancel: function () {}
                     }

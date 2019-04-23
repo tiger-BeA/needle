@@ -8,6 +8,7 @@ window.onload = () => {
     const SCALE = window.innerWidth / window.innerHeight > 0.556 ? window.innerHeight / 1350 : window.innerWidth / 750;
     const WIDTH = window.innerWidth / SCALE;
     const HEIGHT = window.innerHeight / SCALE;
+    const figureRandomIndex = Math.floor(Math.random() * 9 + 1);
 
     const game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO, 'app', undefined, true);
     const $domVideo = document.getElementById('video');
@@ -53,7 +54,8 @@ window.onload = () => {
             game.load.image('bg4', config.bg4);
             game.load.image('godLine', config.godLine);
             game.load.image('btnStart', config.btnStart);
-            isAndroid ? game.load.video('video', config.video) : ($domVideo.src = config.video);
+            // isAndroid ? game.load.video('video', config.video) : ($domVideo.src = config.video);
+            $domVideo.src = config.video;
             game.load.image('needle', config.needle);
             game.load.image('control', config.controlBtn);
             game.load.image('rope', config.line);
@@ -65,6 +67,14 @@ window.onload = () => {
             game.load.image('btnSave', config.btnSave);
             game.load.image('btnLink', config.btnLink);
             game.load.image('resTxt', config.resTxt);
+
+            game.load.image('figure', `./img/p${figureRandomIndex}.png`);
+            game.load.image('figureTxt', `./img/p${figureRandomIndex}_txt.png`);
+            game.load.image('figureTlt', `./img/p${figureRandomIndex}_tlt.png`);
+            game.load.image('figureInfo', `./img/p${figureRandomIndex}_info.png`);
+            game.load.image('figureBg', colorBgs[figureRandomIndex - 1]);
+            finalCardUrl = `./img/p${figureRandomIndex}_card.jpg`;
+            game.load.image('figureCard', finalCardUrl);
 
             const loadText = game.add.text(WIDTH / 2, HEIGHT / 2, '0%', { fill:'#FFF', 'fontSize':`39px` });
             loadText.anchor.setTo(0.5, 0);
@@ -93,17 +103,13 @@ window.onload = () => {
 
     const GameStart = {
         create() {
-            const bg = game.add.image(WIDTH / 2, HEIGHT / 2, 'bg3');
-            bg.anchor.setTo(0.5, 0.5);
-
-            let startBtn = game.add.button(WIDTH / 2, HEIGHT / 2 + 444, 'btnStart', () => {
+            let startBtn = game.add.button(WIDTH / 2, HEIGHT - 87, 'btnStart', () => {
                 showCloud(() => {
                     document.body.classList = ['step-4'];
                     game.state.start('Game');
-                    hideCloud();
                 });
             });
-            startBtn.anchor.setTo(0.5, 0);
+            startBtn.anchor.setTo(0.5, 1);
         }
     }
 
@@ -124,17 +130,7 @@ window.onload = () => {
         config.bg1_0,
         config.bg1_4,
     ];
-    const figureRandomIndex = Math.floor(Math.random() * 9 + 1);
     const RandomFigure = {
-        preload() {
-            game.load.image('figure', `./img/p${figureRandomIndex}.png`);
-            game.load.image('figureTxt', `./img/p${figureRandomIndex}_txt.png`);
-            game.load.image('figureTlt', `./img/p${figureRandomIndex}_tlt.png`);
-            game.load.image('figureInfo', `./img/p${figureRandomIndex}_info.png`);
-            game.load.image('figureBg', colorBgs[figureRandomIndex - 1]);
-            finalCardUrl = `./img/p${figureRandomIndex}_card.jpg`;
-            game.load.image('figureCard', finalCardUrl);
-        },
         create() {
             document.body.style.background = `url(${colorBgs[figureRandomIndex - 1]}) no-repeat center/cover`;
             // document.body.style.background = `url(${config.bg4}) no-repeat center/cover`;
@@ -168,7 +164,6 @@ window.onload = () => {
                 let tmp = setTimeout(() => {
                     showCloud(() => {
                         game.state.start('figureLast');
-                        hideCloud();
                     });
                 }, 3000);
             });
@@ -223,13 +218,18 @@ window.onload = () => {
     let controlInfoTop;
     let infoShakeTween;
     let btnShakeTween;
-    let hasTouchBtn = false;
+    let hasTouchBtn;
+
+    const ALL_LEGNTH_COUNT = 918;
+
+    let CROP_OFFSET_Y;
 
     const RATE_EACH_FRAME = 50;
 
-    const REDUCE_DURATION = RATE_EACH_FRAME * 15;
+    const REDUCE_DURATION = RATE_EACH_FRAME * 17;
 
-    const CROP_OFFSET_Y = RATE_EACH_FRAME / 60;
+
+    let ropeRealLength = 0;
 
     let isTouchBtn;
 
@@ -284,12 +284,11 @@ window.onload = () => {
     function showGameStart() {
         $btnSkip.classList.add('f-hide');
         showCloud(() => {
-            // TODO: 加godLine
+            document.body.style.background = `url(${config.bg3}) no-repeat center/cover`;
             $DomGodLine.src = config.godLine;
             document.body.classList = ['step-3'];
             $domVideo.src = '';
             $domVideo.classList.add('f-hide');
-            hideCloud();
         });
     }
 
@@ -300,6 +299,9 @@ window.onload = () => {
             clearTimer = setTimeout(() => {
                 $DomCloud.removeEventListener('animationend', animationEndCb);
                 cb && cb();
+                let delayHideTimer = setTimeout(() => {
+                    hideCloud();
+                }, 200);
             }, 100);
         };
         $DomCloud.classList = ['f-slipIn'];
@@ -328,9 +330,10 @@ window.onload = () => {
     }
 
     function initRope() {
-        ropeLength = 15;
+        ropeRealLength = ALL_LEGNTH_COUNT;
+        ropeLength = ALL_LEGNTH_COUNT / 54;
         ropeInfo = game.add.text(30, game.world.centerY + 327,
-            '剩余\n15厘米', {
+            '剩余\n17厘米', {
             font: `29px lighter`,
             fill: 'rgb(255, 247, 223)',
             align: 'center'
@@ -353,6 +356,7 @@ window.onload = () => {
     }
 
     function initBtn() {
+        hasTouchBtn = false;
         BTN_CENTER = { x: game.width / 2, y: game.height - 141 }
         btn = game.add.sprite(BTN_CENTER.x, BTN_CENTER.y, 'control');
         btn.anchor.setTo(0.5);
@@ -412,7 +416,9 @@ window.onload = () => {
         controlInfoSide.anchor.setTo(0.5, 1);
         controlInfoSide.alpha = 0;
 
-        replay = game.add.button(WIDTH, 15, 'replay', () => { game.state.restart('Game'); });
+        replay = game.add.button(WIDTH, 15, 'replay', () => {
+            game.state.restart('Game');
+        });
         replay.anchor.setTo(1, 0);
     }
 
@@ -423,7 +429,8 @@ window.onload = () => {
     }
 
     function reduceRope() {
-        if (--ropeLength < 0) {
+        ropeLength = Math.floor(ropeRealLength / 54);
+        if (ropeRealLength <= 0) {
             timer.stop(true);
             isDisableUpdate = true;
             destoryNeedle();
@@ -450,7 +457,6 @@ window.onload = () => {
         let tempTimer = setTimeout(() => {
             showCloud(() => {
                 game.state.start('RandomFigure');
-                hideCloud();
             });
         }, 3000);
     }
@@ -499,16 +505,19 @@ window.onload = () => {
     }
 
     function updateLine(x, y) {
+        ropeRealLength >= 1 && ropeRealLength--;
         bmd.draw(circleSprite, x - 2.5, y);
     }
 
+    let corpRopeHeight;
     function initCropRope(w, h) {
+        corpRopeHeight = h;
         cropRect = new Phaser.Rectangle(0, 0, w, h);
         rope.crop(cropRect);
     }
 
     function updateCropRope() {
-        cropRect.y -= CROP_OFFSET_Y;
+        cropRect.y = (ropeRealLength / ALL_LEGNTH_COUNT - 1) * corpRopeHeight;
         rope.updateCrop();
     }
 };

@@ -3,6 +3,11 @@
     margin: 0;
     font-size: 0;
 }
+a {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+}
 html {
     font-size: calc(100vw / 7.5);
 }
@@ -53,8 +58,8 @@ img[src=""], img:not([src]), video[src=""], video:not([src]) {
 #god-line {
     z-index: 5;
 }
-#good-wrap {
-    z-index: 1;
+#goods-wrap {
+    z-index: 5;
     .btn-save {
         z-index: 1;
     }
@@ -187,10 +192,10 @@ img[src=""], img:not([src]), video[src=""], video:not([src]) {
 
 #skip-btn {
     position: absolute;
-    right: 0.2rem;
-    top: 0.2rem;
-    width: 2rem;
-    height: 0.68rem;
+    right: 0.39rem;
+    top: 0.37rem;
+    width: 2.5rem;
+    height: 0.85rem;
 }
 #loading-gif {
     position: absolute;
@@ -199,7 +204,7 @@ img[src=""], img:not([src]), video[src=""], video:not([src]) {
     top: 50%;
     transform: translate(-50%, -100%);
     width: 3.05rem;
-    height: 2.2rem;
+    height: 1.91rem;
 }
 video {
     top: 50%;
